@@ -34,16 +34,26 @@ public class TestFilm {
     }
 
     private static void listAllFilm(FilmRepository filmRepository) {
-        List<Film> filmList = filmRepository.findAll();
-        for (Film film : filmList) {
-            System.out.println(film);
+        int maxRecords = 10;
+        int startPosition = 0;
+
+        while (true) {
+            List<Film> filmList = filmRepository.findAll(startPosition, maxRecords);
+            if (filmList.isEmpty()) {
+                break;
+            }
+            for (Film film : filmList) {
+                System.out.println(film);
+            }
+            startPosition = startPosition + filmList.size();
+            System.out.println("---------------------");
         }
     }
 
     private static void createNewFilm(FilmRepository filmRepository) {
         Film newFilm = new Film();
         newFilm.setTitle("Inception");
-        newFilm.setReleaseYear(2010); // แก้ไขจาก "2010" เป็นตัวเลข 2010 (Integer)
+        newFilm.setReleaseYear(2010);
         newFilm.setRating("PG-13");
         newFilm.setLanguageId("1");
         newFilm = filmRepository.save(newFilm);

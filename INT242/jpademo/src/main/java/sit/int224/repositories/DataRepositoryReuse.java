@@ -35,6 +35,25 @@ public interface DataRepositoryReuse<E, T> {
             em.close();
         }
     }
+    // 2. findAll แบบเพิ่มฟีเจอร์ Paging (ดึงแบบแบ่งหน้าตามลอจิกที่พี่ส่งมา)
+    default List<E> findAll(int startPosition, int maxRecords) {
+        EntityManager em = getEntityManager();
+        try {
+            // สร้าง Dynamic Query จากชื่อเอนทิตีคลาส
+            var query = em.createQuery(
+                    "select e from " + getEntityClass().getSimpleName() + " e",
+                    getEntityClass()
+            );
+
+            // นำลอจิกจากสไลด์เรื่อง Paging มาผูกเข้ากับเมธอดดึงข้อมูล
+            query.setFirstResult(startPosition); // กำหนดจุดเริ่มต้นดึงข้อมูล (Offset) [cite: 415]
+            query.setMaxResults(maxRecords);     // กำหนดจำนวนแถวสูงสุดในหน้านั้นๆ (Limit) [cite: 414]
+
+            return query.getResultList();
+        } finally {
+            em.close(); // ปิดเซสชันเพื่อป้องกันปัญหาหน่วยความจำรั่วไหล (Memory Leak)
+        }
+    }
     default Optional<E> findById(T id) {
         EntityManager em= getEntityManager();
         try {
