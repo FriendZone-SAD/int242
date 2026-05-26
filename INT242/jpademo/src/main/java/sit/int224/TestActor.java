@@ -67,4 +67,3 @@ public class TestActor {
         System.out.println(actor);
     }
 }
-
